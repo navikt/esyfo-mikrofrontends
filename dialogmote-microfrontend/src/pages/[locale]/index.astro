@@ -1,24 +1,36 @@
 ---
-import { EXAMPLE_API_URL } from "astro:env/server";
+import { ISDIALOGMOTE_API_URL } from "astro:env/server";
+import { SYFOMOTEBEHOV_API_URL } from "astro:env/server";
 import { BodyShort, Heading, Link } from "@navikt/ds-react";
 import ClientIsland from "@src/components/ClientIsland";
 import { text } from "@src/language/text";
 import type { Language } from "@src/language/types";
-import styles from "@src/styles/index.module.css";
-import { fetchExampleData } from "@src/utils/fetch";
+import { fetchBrev } from "@src/utils/fetch";
 import { logger } from "@src/utils/logger";
 import { getOboToken } from "@src/utils/token";
-import "@src/styles/aksel.css";
 import { isLocal } from "@src/utils/environment";
-import type { ExampleData } from "@src/utils/types";
+import { MotebehovStatusDTO } from "../../../schema/motebehovSchema";
+import { BrevDTO } from "../../../schema/brevSchema";
+import { fetchMotebehov } from "../../utils/fetch";
+import styles from "@src/styles/index.module.css";
+import "@src/styles/aksel.css";
 
-const oboToken = await getOboToken(Astro.locals.token);
-let exampleData: ExampleData;
+const accessToken = await getOboToken(Astro.locals.token);
+
+let brev: BrevDTO[];
+let motebehov: MotebehovStatusDTO;
 
 try {
-  exampleData = await fetchExampleData(oboToken, EXAMPLE_API_URL);
+  brev = await fetchBrev(accessToken, ISDIALOGMOTE_API_URL);
 } catch (error) {
-  logger.error(`Error fetching example data: ${error}`);
+  logger.error(`Error fetching brev: ${error}`);
+  return new Response("Internal Server Error", { status: 503 });
+}
+
+try {
+  motebehov = await fetchMotebehov(accessToken, SYFOMOTEBEHOV_API_URL);
+} catch (error) {
+  logger.error(`Error fetching motebehov: ${error}`);
   return new Response("Internal Server Error", { status: 503 });
 }
 
@@ -32,7 +44,7 @@ const language = Astro.currentLocale as Language;
       {text.title[language]}
     </Heading>
     <BodyShort>
-      {text.name[language]}: {exampleData.name}
+      {text.name[language]}...
     </BodyShort>
     <Link href="#" id="link">
       {text.link[language]}
