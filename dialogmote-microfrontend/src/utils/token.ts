@@ -1,10 +1,8 @@
 import { requestOboToken } from "@navikt/oasis";
 import { isLocal } from "./environment";
 
-const audience = `${process.env.NAIS_CLUSTER_NAME}:min-side:example-api`;
-
-export const getOboToken = async (token: string): Promise<string> => {
-  const oboResult = await requestOboToken(token, audience);
+export const getAccessToken = async (token: string, clientID: string): Promise<string> => {
+  const oboResult = await requestOboToken(token, clientID);
 
   if (isLocal) {
     return "Fake token";

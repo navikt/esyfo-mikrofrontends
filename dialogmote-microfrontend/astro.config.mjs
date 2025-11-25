@@ -58,10 +58,20 @@ export default defineConfig({
         access: "secret",
         default: "http://localhost:3000/api/dialogmote",
       }),
+      ISDIALOGMOTE_CLIENT_ID: envField.string({
+        context: "server",
+        access: "secret",
+        default: "local:teamsykefravr:isdialogmote",
+      }),
       SYFOMOTEBEHOV_API_URL: envField.string({
         context: "server",
         access: "secret",
         default: "http://localhost:3000/api/motebehov",
+      }),
+      SYFOMOTEBEHOV_CLIENT_ID: envField.string({
+        context: "server",
+        access: "secret",
+        default: "dev-gcp:team-esyfo:syfomotebehov",
       }),
       DIALOGMOTE_URL: envField.string({
           context: "server",

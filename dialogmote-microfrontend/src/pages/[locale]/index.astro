@@ -1,34 +1,30 @@
 ---
-import { ISDIALOGMOTE_API_URL } from "astro:env/server";
-import { SYFOMOTEBEHOV_API_URL } from "astro:env/server";
 import { BodyShort, Heading, Link } from "@navikt/ds-react";
-import ClientIsland from "@src/components/ClientIsland";
 import { text } from "@src/language/text";
-import type { Language } from "@src/language/types";
 import { fetchBrev } from "@src/utils/fetch";
 import { logger } from "@src/utils/logger";
-import { getOboToken } from "@src/utils/token";
 import { isLocal } from "@src/utils/environment";
 import { MotebehovStatusDTO } from "../../../schema/motebehovSchema";
 import { BrevDTO } from "../../../schema/brevSchema";
 import { fetchMotebehov } from "../../utils/fetch";
+import type { Language } from "@src/language/types";
 import styles from "@src/styles/index.module.css";
 import "@src/styles/aksel.css";
 
-const accessToken = await getOboToken(Astro.locals.token);
+const userToken = Astro.locals.token;
 
 let brev: BrevDTO[];
 let motebehov: MotebehovStatusDTO;
 
 try {
-  brev = await fetchBrev(accessToken, ISDIALOGMOTE_API_URL);
+  brev = await fetchBrev(userToken);
 } catch (error) {
   logger.error(`Error fetching brev: ${error}`);
   return new Response("Internal Server Error", { status: 503 });
 }
 
 try {
-  motebehov = await fetchMotebehov(accessToken, SYFOMOTEBEHOV_API_URL);
+  motebehov = await fetchMotebehov(userToken);
 } catch (error) {
   logger.error(`Error fetching motebehov: ${error}`);
   return new Response("Internal Server Error", { status: 503 });
@@ -49,7 +45,6 @@ const language = Astro.currentLocale as Language;
     <Link href="#" id="link">
       {text.link[language]}
     </Link>
-    <ClientIsland client:only="react" />
   </div>
 </section>
 <script>
