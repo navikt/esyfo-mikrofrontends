@@ -1,14 +1,13 @@
 ---
-import { BodyShort, Heading, Link } from "@navikt/ds-react";
-import { text } from "@src/language/text";
 import { fetchBrev } from "@src/utils/fetch";
 import { logger } from "@src/utils/logger";
 import { isLocal } from "@src/utils/environment";
 import { MotebehovStatusDTO } from "../../../schema/motebehovSchema";
 import { BrevDTO } from "../../../schema/brevSchema";
 import { fetchMotebehov } from "../../utils/fetch";
+import { getLatestBrev, getShowDialogmotePanel } from "../../utils/brev";
+import { getShowMotebehovPanel } from "../../utils/motebehov";
 import type { Language } from "@src/language/types";
-import styles from "@src/styles/index.module.css";
 import "@src/styles/aksel.css";
 
 const userToken = Astro.locals.token;
@@ -30,26 +29,20 @@ try {
   return new Response("Internal Server Error", { status: 503 });
 }
 
+const latestBrev = getLatestBrev(brev);
+
+const showDialogmotePanel = getShowDialogmotePanel(latestBrev);
+const showMotebehovPanel = getShowMotebehovPanel(motebehov);
+
 const language = Astro.currentLocale as Language;
 ---
 
 {isLocal && <meta charset="UTF-8" />}
-<section class="tms-microfrontend-template-ssr">
-  <div class={styles.microfrontend}>
-    <Heading size="medium" level="2">
-      {text.title[language]}
-    </Heading>
-    <BodyShort>
-      {text.name[language]}...
-    </BodyShort>
-    <Link href="#" id="link">
-      {text.link[language]}
-    </Link>
-  </div>
-</section>
-<script>
-  import { logEvent } from "@src/utils/analytics";
+{showDialogmotePanel && (
+  <DialogmotePanel />
+)}
+{showMotebehovPanel && (
+  <MotebehovPanel />
+)}
 
-  const microfrontend = document.querySelector("#link");
-  microfrontend?.addEventListener("click", () => logEvent("Lenke"));
-</script>
+
