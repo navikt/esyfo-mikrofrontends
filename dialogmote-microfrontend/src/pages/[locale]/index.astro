@@ -39,7 +39,11 @@ const language = Astro.currentLocale as Language;
 
 {isLocal && <meta charset="UTF-8" />}
 {showDialogmotePanel && (
-  <DialogmotePanel />
+  <DialogmotePanel
+    attending={latestBrev.svar?.svarType || null}
+    date={latestBrev.tid}
+      brevType={latestBrev.brevType}
+  />
 )}
 {showMotebehovPanel && (
   <MotebehovPanel />
